@@ -3,13 +3,12 @@ const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-const app = express();
 const myURL = "https://www.wp.pl";
 
 const getAllImagesURL = async (url) => {
 	const imagesURL = [];
 	try {
-		const response = await axios(url);
+		const response = await axios(`http://${url}`);
 		const html = await response.data;
 		const $ = cheerio.load(html);
 		let images = $("img");
@@ -21,14 +20,18 @@ const getAllImagesURL = async (url) => {
 		console.log(error);
 	} finally {
 		if (imagesURL.length > 0) {
-			console.log(imagesURL);
+			return imagesURL;
 		} else {
-			console.log("No data");
+			return "No data";
 		}
 	}
 };
 
-getAllImagesURL(myURL);
+const app = express();
+
+app.get("/:pageURL", async (req, res) => {
+	res.send(await getAllImagesURL(req.params["pageURL"]));
+});
 
 app.listen(PORT, () => {
 	console.log(`Server running on PORT ${PORT}`);
