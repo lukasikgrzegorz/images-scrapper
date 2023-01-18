@@ -30,7 +30,8 @@ const getAllImagesURL = async (url) => {
 const app = express();
 
 app.get("/:pageURL", async (req, res) => {
-	res.send(await getAllImagesURL(req.params["pageURL"]));
+	const images = await getAllImagesURL(req.params["pageURL"]);
+	res.send(images.map((image) => `<img src="${image}"></img>`).join(" "));
 });
 
 app.listen(PORT, () => {
