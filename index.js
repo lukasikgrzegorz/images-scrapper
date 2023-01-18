@@ -1,22 +1,34 @@
-const PORT = 3002;
+const PORT = 3000;
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
 const app = express();
-const url = "https://wp.pl";
+const myURL = "https://www.wp.pl";
 
-axios(url).then((response) => {
-	const html = response.data;
+const getAllImagesURL = async (url) => {
 	const imagesURL = [];
-	const $ = cheerio.load(html);
-	let images = $("img");
+	try {
+		const response = await axios(url);
+		const html = await response.data;
+		const $ = cheerio.load(html);
+		let images = $("img");
+		images.each(function () {
+			let currentURL = $(this).attr("src");
+			imagesURL.push(currentURL);
+		});
+	} catch (error) {
+		console.log(error);
+	} finally {
+		if (imagesURL.length > 0) {
+			console.log(imagesURL);
+		} else {
+			console.log("No data");
+		}
+	}
+};
 
-	images.each(function () {
-		let imageURL = $(this).attr("src");
-		console.log(imageURL);
-	});
-});
+getAllImagesURL(myURL);
 
 app.listen(PORT, () => {
 	console.log(`Server running on PORT ${PORT}`);
