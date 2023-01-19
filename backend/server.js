@@ -1,4 +1,4 @@
-const PORT = 3000;
+const PORT = 5000;
 const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -19,19 +19,20 @@ const getAllImagesURL = async (url) => {
 	} catch (error) {
 		console.log(error);
 	} finally {
-		if (imagesURL.length > 0) {
-			return imagesURL;
-		} else {
-			return "No data";
-		}
+		return imagesURL;
 	}
 };
 
 const app = express();
 
-app.get("/:pageURL", async (req, res) => {
+// app.get("/:pageURL", async (req, res) => {
+// 	const images = await getAllImagesURL(req.params["pageURL"]);
+// 	res.send();
+// });
+
+app.get("/api/:pageURL", async (req, res) => {
 	const images = await getAllImagesURL(req.params["pageURL"]);
-	res.send(images.map((image) => `<img src="${image}"></img>`).join(" "));
+	res.json(images);
 });
 
 app.listen(PORT, () => {
