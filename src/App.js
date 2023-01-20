@@ -1,26 +1,47 @@
-import logo from "./logo.svg";
+import { useState, useRef, useEffect } from "react";
 import "./App.css";
 
 function App() {
-	const testFoo = async () => {
+	const [query, setQuery] = useState("");
+	const [images, setImages] = useState([]);
+	const inputRef = useRef();
+
+	const fetchWithURL = async (url) => {
 		try {
-			const test = await fetch("./api/www.wp.pl");
+			const test = await fetch(`./api/${url}`);
 			const response = await test.json();
 			console.log(response);
+			setImages([...response]);
 		} catch (error) {
 			console.log(error);
 		}
 	};
 
-	testFoo();
+	useEffect(() => {
+		query.length > 0 && fetchWithURL(query);
+	}, [query]);
+
+	const submitHandler = (e) => {
+		e.preventDefault();
+		setQuery(inputRef.current.value);
+	};
+
 	return (
 		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> and save to reload.
-				</p>
-			</header>
+			<form onSubmit={submitHandler}>
+				<input ref={inputRef}></input>
+				<button type="submit">Scrap!</button>
+			</form>
+			<ul>
+				{images.length > 0 &&
+					images.map((imageURL, index) => {
+						return (
+							<li key={index}>
+								<img src={imageURL}></img>
+							</li>
+						);
+					})}
+			</ul>
 		</div>
 	);
 }
